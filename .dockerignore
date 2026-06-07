@@ -1,0 +1,17 @@
+node_modules
+.next
+.git
+.gitignore
+npm-debug.log*
+dev-server.log
+*.log
+.env*
+.vscode
+README.md
+AGENTS.md
+CLAUDE.md
+*.tsbuildinfo
+.DS_Store
+Dockerfile
+.dockerignore
+netlify.toml
