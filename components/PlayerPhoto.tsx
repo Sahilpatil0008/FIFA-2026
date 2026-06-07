@@ -19,26 +19,52 @@ interface PlayerPhotoProps {
   rounded?: boolean;
 }
 
-function Silhouette({ jersey, color, size, rounded }: { jersey?: number; color: string; size: number; rounded: boolean }) {
+/** First letter of the first two name parts, e.g. "Kylian Mbappé" → "KM". */
+function initials(name: string): string {
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return '?';
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+}
+
+/** Pick black or white text for readable contrast on the given hex color. */
+function readableText(hex: string): string {
+  const m = hex.replace('#', '');
+  const full = m.length === 3 ? m.split('').map((c) => c + c).join('') : m;
+  const r = parseInt(full.slice(0, 2), 16) || 0;
+  const g = parseInt(full.slice(2, 4), 16) || 0;
+  const b = parseInt(full.slice(4, 6), 16) || 0;
+  // Relative luminance — bright backgrounds get dark text and vice-versa.
+  const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+  return luminance > 0.6 ? '#0a0e1a' : '#ffffff';
+}
+
+/**
+ * Fallback shown when no Wikipedia photo is found: the player's initials on
+ * their team color. Reads as intentional, not a broken image.
+ */
+function InitialsAvatar({ name, jersey, color, size, rounded }: { name: string; jersey?: number; color: string; size: number; rounded: boolean }) {
   return (
     <div
-      className="relative flex items-center justify-center shrink-0 overflow-hidden"
+      className="relative flex items-center justify-center shrink-0 overflow-hidden font-bold"
       style={{
         width: size,
         height: size,
         borderRadius: rounded ? '50%' : 12,
-        background: `linear-gradient(135deg, ${color}33, ${color}11)`,
-        border: `1px solid ${color}44`,
+        background: color,
+        color: readableText(color),
+        fontSize: Math.round(size * 0.38),
+        letterSpacing: '0.02em',
+        border: `1px solid ${color}`,
       }}
-      aria-hidden
+      role="img"
+      aria-label={name}
     >
-      <svg viewBox="0 0 24 24" width={size * 0.6} height={size * 0.6} fill={color} opacity={0.55}>
-        <path d="M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10Zm0 2c-4.4 0-8 2.7-8 6v2h16v-2c0-3.3-3.6-6-8-6Z" />
-      </svg>
+      {initials(name)}
       {jersey != null && (
         <span
           className="absolute bottom-0 right-0 font-mono text-[10px] font-bold px-1 rounded-tl"
-          style={{ background: color, color: '#0a0e1a' }}
+          style={{ background: '#0a0e1a', color: '#fff' }}
         >
           {jersey}
         </span>
@@ -100,7 +126,7 @@ export default function PlayerPhoto({
   if (!url || broken) {
     return (
       <div className={className}>
-        <Silhouette jersey={jersey} color={color} size={size} rounded={rounded} />
+        <InitialsAvatar name={name} jersey={jersey} color={color} size={size} rounded={rounded} />
       </div>
     );
   }
