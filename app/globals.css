@@ -1,26 +1,347 @@
+@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800;900&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
 @import "tailwindcss";
 
+/* ===========================================================================
+   THEME SYSTEM
+   Default = Light (white bg + blue accent). Dark mode is opt-in via
+   <html data-theme="dark"> (set by ThemeToggle / the no-FOUC script in layout).
+   The old gold tokens (--gold*) are aliased onto the blue accent so every
+   existing `var(--gold)` reference across the app becomes blue automatically.
+   =========================================================================== */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  color-scheme: light;
+
+  /* ===== Surfaces ===== */
+  --bg: #FFFFFF;
+  --bg-2: #F4F6FB;
+  --surface: #FFFFFF;
+  --surface-2: #F6F8FC;
+  --elevated: #FFFFFF;
+
+  /* ===== Lines & text ===== */
+  --border: rgba(15, 23, 42, 0.10);
+  --border-strong: rgba(15, 23, 42, 0.18);
+  --text: #0F1117;
+  --text-2: #475569;
+  --muted: #64748B;
+
+  /* ===== Accent (blue) ===== */
+  --accent: #0066FF;
+  --accent-2: #3D87FF;
+  --accent-deep: #0047B3;
+  --on-accent: #FFFFFF; /* text/icon color that sits on top of the accent */
+
+  /* Chrome */
+  --header-bg: rgba(255, 255, 255, 0.85);
+  --backdrop: rgba(15, 23, 42, 0.40);
+
+  /* ===== Status ===== */
+  --live: #E11D48;
+  --win: #16A34A;
+  --draw: #D97706;
+  --loss: #DC2626;
+
+  --radius: 14px;
+  --shadow: 0 1px 2px rgba(15,23,42,0.06), 0 8px 24px rgba(15,23,42,0.08);
+
+  /* ---- Gold tokens repointed to blue accent (back-compat) ---- */
+  --gold: var(--accent);
+  --gold-2: var(--accent-2);
+  --gold-deep: var(--accent-deep);
+
+  /* Legacy aliases kept so existing pages still resolve */
+  --color-pitch: var(--bg);
+  --color-turf: var(--surface);
+  --color-grass: var(--surface-2);
+  --color-gold: var(--accent);
+  --color-gold-2: var(--accent-2);
+  --color-live: var(--live);
+  --color-win: var(--win);
+  --color-draw: var(--draw);
+  --color-loss: var(--loss);
+  --color-muted: var(--text-2);
+  --color-border: var(--border);
+  --color-card: var(--surface);
+  --color-card-hover: var(--surface-2);
+
+  --team-primary: var(--accent);
+  --team-secondary: #FFFFFF;
+  --team-accent: var(--accent-2);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --bg: #0F1117;
+  --bg-2: #12141C;
+  --surface: #161922;
+  --surface-2: #1C2030;
+  --elevated: #222738;
+
+  --border: rgba(255, 255, 255, 0.09);
+  --border-strong: rgba(255, 255, 255, 0.16);
+  --text: #E6EAF2;
+  --text-2: #AEB7C7;
+  --muted: #7C879B;
+
+  --accent: #58A6FF;
+  --accent-2: #79B8FF;
+  --accent-deep: #1F6FEB;
+  --on-accent: #0A0E1A;
+
+  --header-bg: rgba(15, 17, 23, 0.82);
+  --backdrop: rgba(2, 4, 8, 0.72);
+
+  --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.32);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background:
+    radial-gradient(1200px 600px at 50% -200px, color-mix(in srgb, var(--accent) 8%, transparent), transparent 60%),
+    var(--bg);
+  color: var(--text);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-feature-settings: "cv01", "cv03", "ss01";
+  min-height: 100vh;
+  overflow-x: hidden;
+  letter-spacing: -0.011em;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* ---------------------------------------------------------------------------
+   Theme-aware text override.
+   The app was authored dark-first with `text-white` on headings/labels. This
+   unlayered rule (which outranks Tailwind's layered utility) maps it to the
+   active theme's text color, so headings read as near-black in light mode and
+   near-white in dark mode. Use inline `style={{ color: '#fff' }}` where text
+   must stay white on a colored surface.
+   --------------------------------------------------------------------------- */
+.text-white { color: var(--text); }
+
+/* ========= Typography ========= */
+.font-display { font-family: 'Archivo', sans-serif; font-weight: 800; letter-spacing: -0.02em; }
+.font-heading { font-family: 'Archivo', sans-serif; font-weight: 700; letter-spacing: -0.01em; }
+.font-mono { font-family: 'JetBrains Mono', monospace; font-feature-settings: "tnum"; }
+
+h1, h2, h3, h4 { letter-spacing: -0.02em; }
+
+::selection { background: color-mix(in srgb, var(--accent) 24%, transparent); color: var(--text); }
+
+/* ========= Scrollbar ========= */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: color-mix(in srgb, var(--muted) 45%, transparent); border-radius: 99px; border: 3px solid var(--bg); }
+::-webkit-scrollbar-thumb:hover { background: color-mix(in srgb, var(--muted) 70%, transparent); }
+
+/* ========= Animations ========= */
+@keyframes pulse-live { 0%, 100% { opacity: 1; } 50% { opacity: 0.25; } }
+@keyframes slide-up { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes count-up { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+@keyframes glow-gold { 0%, 100% { box-shadow: 0 0 0 1px rgba(0,102,255,0.25); } 50% { box-shadow: 0 0 24px rgba(0,102,255,0.35); } }
+@keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+@keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+@keyframes rotate-slow { from { transform: rotate(0); } to { transform: rotate(360deg); } }
+@keyframes score-flash { 0% { background: rgba(0,102,255,0.4); } 100% { background: transparent; } }
+
+.animate-slide-up { animation: slide-up 0.5s cubic-bezier(0.16,1,0.3,1) forwards; }
+.animate-float { animation: float 4s ease-in-out infinite; }
+.animate-pulse-live { animation: pulse-live 1.4s ease-in-out infinite; }
+.animate-glow { animation: glow-gold 2.4s ease-in-out infinite; }
+.animate-rotate-slow { animation: rotate-slow 24s linear infinite; }
+.animate-shimmer {
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.08) 50%, transparent 100%);
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
+
+/* ========= Cards ========= */
+.glass-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  transition: border-color 0.2s ease, transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+}
+.glass-card:hover {
+  background: var(--surface-2);
+  border-color: var(--border-strong);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+}
+
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.gold-border { border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent); }
+.gold-glow { box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 25%, transparent), 0 0 40px color-mix(in srgb, var(--accent) 14%, transparent); }
+
+/* ========= Buttons ========= */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  height: 42px; padding: 0 18px; border-radius: 10px;
+  font-family: 'Inter', sans-serif; font-weight: 600; font-size: 14px;
+  border: 1px solid var(--border-strong); color: var(--text);
+  background: var(--surface-2);
+  transition: all 0.18s ease; cursor: pointer; white-space: nowrap;
+}
+.btn:hover { background: var(--elevated); border-color: rgba(255,255,255,0.2); }
+.btn-primary {
+  background: linear-gradient(180deg, var(--accent-2), var(--accent));
+  color: var(--on-accent); border: none; font-weight: 700;
+  box-shadow: 0 1px 0 rgba(255,255,255,0.25) inset, 0 6px 18px color-mix(in srgb, var(--accent) 30%, transparent);
+}
+.btn-primary:hover { filter: brightness(1.06); background: linear-gradient(180deg, var(--accent-2), var(--accent)); }
+.btn-live {
+  background: rgba(255,71,87,0.12); border: 1px solid rgba(255,71,87,0.35); color: #FF6B78;
+}
+.btn-live:hover { background: rgba(255,71,87,0.2); }
+
+/* ========= Text styles ========= */
+.text-gold-gradient {
+  background: linear-gradient(135deg, var(--accent-2) 0%, var(--accent) 60%, var(--accent-deep) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.text-gradient-blue {
+  background: linear-gradient(135deg, #7FB2FF 0%, #B69CFF 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+
+.eyebrow {
+  font-family: 'Archivo', sans-serif; font-weight: 700;
+  font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--gold);
+}
+.section-title { font-family: 'Archivo', sans-serif; font-weight: 800; letter-spacing: -0.02em; }
+
+/* ========= Chips ========= */
+.chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 4px 10px; border-radius: 999px;
+  font-size: 11px; font-weight: 600; letter-spacing: 0.02em;
+  background: var(--surface-2); border: 1px solid var(--border); color: var(--text-2);
+}
+.chip-gold { background: color-mix(in srgb, var(--accent) 10%, transparent); border-color: color-mix(in srgb, var(--accent) 25%, transparent); color: var(--accent-deep); }
+
+/* ========= Live Badge ========= */
+.live-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(255,71,87,0.12); border: 1px solid rgba(255,71,87,0.4);
+  color: #FF6B78; padding: 3px 9px; border-radius: 999px;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+}
+.live-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--live); box-shadow: 0 0 0 0 rgba(255,71,87,0.6); animation: pulse-live 1.3s ease-in-out infinite; }
+
+/* ========= Team Theme Classes ========= */
+.team-argentina { --team-primary: #74ACDF; --team-secondary: #FFFFFF; --team-accent: #F6B40E; }
+.team-france { --team-primary: #002395; --team-secondary: #ED2939; --team-accent: #FFFFFF; }
+.team-spain { --team-primary: #AA151B; --team-secondary: #F1BF00; --team-accent: #AA151B; }
+.team-brazil { --team-primary: #009C3B; --team-secondary: #FEDD00; --team-accent: #009FC3; }
+.team-england { --team-primary: #CF142B; --team-secondary: #FFFFFF; --team-accent: #012169; }
+.team-germany { --team-primary: #000000; --team-secondary: #DD0000; --team-accent: #FFCE00; }
+.team-portugal { --team-primary: #006600; --team-secondary: #FF0000; --team-accent: #FFD700; }
+.team-netherlands { --team-primary: #FF6600; --team-secondary: #FFFFFF; --team-accent: #003DA5; }
+.team-belgium { --team-primary: #000000; --team-secondary: #FAE042; --team-accent: #EF3340; }
+.team-croatia { --team-primary: #FF0000; --team-secondary: #FFFFFF; --team-accent: #171796; }
+.team-usa { --team-primary: #3C3B6E; --team-secondary: #FFFFFF; --team-accent: #B22234; }
+.team-mexico { --team-primary: #006847; --team-secondary: #FFFFFF; --team-accent: #CE1126; }
+.team-uruguay { --team-primary: #75AADB; --team-secondary: #FFFFFF; --team-accent: #FFFFFF; }
+.team-japan { --team-primary: #BC002D; --team-secondary: #FFFFFF; --team-accent: #BC002D; }
+.team-morocco { --team-primary: #C1272D; --team-secondary: #006233; --team-accent: #FFFFFF; }
+.team-senegal { --team-primary: #00853F; --team-secondary: #FCD116; --team-accent: #E31B23; }
+.team-colombia { --team-primary: #FCD116; --team-secondary: #003087; --team-accent: #CE1126; }
+.team-italy { --team-primary: #009246; --team-secondary: #FFFFFF; --team-accent: #CE2B37; }
+.team-south-korea { --team-primary: #CD2E3A; --team-secondary: #0047A0; --team-accent: #FFFFFF; }
+.team-denmark { --team-primary: #C60C30; --team-secondary: #FFFFFF; --team-accent: #C60C30; }
+.team-switzerland { --team-primary: #FF0000; --team-secondary: #FFFFFF; --team-accent: #FF0000; }
+.team-poland { --team-primary: #FFFFFF; --team-secondary: #DC143C; --team-accent: #DC143C; }
+.team-australia { --team-primary: #FFCD00; --team-secondary: #00843D; --team-accent: #002B7F; }
+.team-ecuador { --team-primary: #FFD100; --team-secondary: #003580; --team-accent: #FF0000; }
+
+/* ========= Score Board ========= */
+.scoreboard {
+  background: linear-gradient(180deg, var(--surface-2) 0%, var(--surface) 100%);
+  border: 1px solid var(--border); border-radius: var(--radius);
+}
+.score-number {
+  font-family: 'Archivo', sans-serif; font-weight: 800;
+  font-size: 3rem; line-height: 1; color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ========= Progress bars ========= */
+.stat-bar-track { height: 6px; border-radius: 999px; background: rgba(255,255,255,0.08); overflow: hidden; }
+.stat-bar-fill { height: 100%; border-radius: 999px; background: linear-gradient(90deg, var(--team-primary), var(--team-accent)); transition: width 0.8s cubic-bezier(0.16,1,0.3,1); }
+
+/* ========= Pitch Pattern Background ========= */
+.pitch-pattern {
+  background-image:
+    linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+  background-size: 56px 56px;
+}
+
+/* ========= Table Styles ========= */
+.standings-table { width: 100%; border-collapse: collapse; }
+.standings-table th {
+  font-family: 'Archivo', sans-serif; font-size: 11px; font-weight: 700;
+  letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted);
+  padding: 10px 12px; text-align: left;
+}
+.standings-table td {
+  padding: 11px 12px; border-bottom: 1px solid var(--border); font-size: 14px;
+  font-variant-numeric: tabular-nums;
+}
+.standings-table tbody tr:last-child td { border-bottom: none; }
+.standings-table tr:hover td { background: rgba(255,255,255,0.025); }
+
+/* ========= Form Badge ========= */
+.form-badge-W { background: rgba(46,212,122,0.16); color: var(--win); border: 1px solid rgba(46,212,122,0.3); }
+.form-badge-D { background: rgba(245,184,61,0.16); color: var(--draw); border: 1px solid rgba(245,184,61,0.3); }
+.form-badge-L { background: rgba(255,94,87,0.16); color: var(--loss); border: 1px solid rgba(255,94,87,0.3); }
+.form-badge {
+  width: 22px; height: 22px; border-radius: 6px;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700;
+}
+
+/* ========= Hero gradient ========= */
+.hero-gradient {
+  background: linear-gradient(180deg, rgba(11,14,20,0) 0%, rgba(11,14,20,0.6) 60%, var(--bg) 100%);
+}
+
+/* ========= Ticker ========= */
+@keyframes ticker-slide { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+.ticker-inner { display: flex; animation: ticker-slide 40s linear infinite; white-space: nowrap; }
+.ticker-inner:hover { animation-play-state: paused; }
+
+/* ========= Qualification zone colors ========= */
+.zone-advance { background: rgba(46,212,122,0.07); border-left: 3px solid var(--win); }
+.zone-possible { background: rgba(245,184,61,0.07); border-left: 3px solid var(--draw); }
+.zone-eliminated { background: rgba(255,94,87,0.07); border-left: 3px solid var(--loss); }
+
+/* ========= Nav ========= */
+.nav-link {
+  font-family: 'Inter', sans-serif; font-weight: 600; font-size: 13.5px;
+  letter-spacing: -0.005em; color: var(--text-2);
+  padding: 8px 12px; border-radius: 9px; transition: all 0.16s ease; position: relative;
+}
+.nav-link:hover { color: var(--text); background: rgba(255,255,255,0.05); }
+.nav-link.active { color: var(--text); background: rgba(255,255,255,0.06); }
+.nav-link.active::after {
+  content: ''; position: absolute; left: 12px; right: 12px; bottom: -1px; height: 2px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2)); border-radius: 2px;
+}
+
+/* ========= Responsive ========= */
+@media (max-width: 768px) {
+  .score-number { font-size: 2rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; }
 }
