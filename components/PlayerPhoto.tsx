@@ -9,6 +9,8 @@ const photoCache = new Map<string, string | null>();
 interface PlayerPhotoProps {
   /** Wikipedia article title / player name, e.g. "Kylian Mbappé". */
   name: string;
+  /** Known photo URL (e.g. from the squad data). Used directly, skips lookup. */
+  photoUrl?: string;
   /** Optional jersey number shown on the fallback silhouette. */
   jersey?: number;
   /** Accent color for the fallback background. */
@@ -75,6 +77,7 @@ function InitialsAvatar({ name, jersey, color, size, rounded }: { name: string; 
 
 export default function PlayerPhoto({
   name,
+  photoUrl,
   jersey,
   color = '#0066FF',
   size = 64,
@@ -82,11 +85,16 @@ export default function PlayerPhoto({
   rounded = false,
 }: PlayerPhotoProps) {
   const [url, setUrl] = useState<string | null | undefined>(() =>
-    photoCache.has(name) ? photoCache.get(name) : undefined,
+    photoUrl ? photoUrl : photoCache.has(name) ? photoCache.get(name) : undefined,
   );
   const [broken, setBroken] = useState(false);
 
   useEffect(() => {
+    // A known photo URL (from squad data) wins — no need to hit the lookup API.
+    if (photoUrl) {
+      setUrl(photoUrl);
+      return;
+    }
     if (photoCache.has(name)) {
       setUrl(photoCache.get(name) ?? null);
       return;
@@ -105,7 +113,10 @@ export default function PlayerPhoto({
     return () => {
       active = false;
     };
-  }, [name]);
+  }, [name, photoUrl]);
+
+  // Reset the broken flag whenever the source changes.
+  useEffect(() => setBroken(false), [name, photoUrl]);
 
   // Still loading
   if (url === undefined) {

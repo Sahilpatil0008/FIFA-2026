@@ -108,7 +108,7 @@ export default function TeamSquadModal({ team, onClose }: Props) {
                 style={{ borderTop: `2px solid ${color}` }}
               >
                 <div className="relative">
-                  <PlayerPhoto name={p.name} jersey={p.jerseyNum} color={color} size={72} rounded />
+                  <PlayerPhoto name={p.name} photoUrl={p.photoUrl} jersey={p.jerseyNum} color={color} size={72} rounded />
                   {/* Jersey number badge */}
                   <span
                     className="absolute -bottom-1 -right-1 font-mono text-[11px] font-bold px-1.5 py-0.5 rounded-md"

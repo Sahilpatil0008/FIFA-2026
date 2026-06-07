@@ -60,7 +60,7 @@ export default async function PlayerPage({ params }: Props) {
           <div className="flex flex-col md:flex-row gap-8 items-start">
             {/* Player Photo */}
             <div className="shrink-0 relative">
-              <PlayerPhoto name={player.name} jersey={player.jerseyNum} color={team.primaryColor} size={176} />
+              <PlayerPhoto name={player.name} photoUrl={player.photoUrl} jersey={player.jerseyNum} color={team.primaryColor} size={176} />
               <span className="absolute -bottom-2 -right-2 text-3xl drop-shadow-lg" aria-hidden>{player.flag}</span>
             </div>
 

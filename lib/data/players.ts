@@ -1,3 +1,5 @@
+import { squadPlayers } from './squad-players';
+
 export interface Player {
   id: string;
   name: string;
@@ -43,7 +45,8 @@ export interface PlayerStats {
   rating: number;
 }
 
-export const players: Player[] = [
+// Hand-curated marquee players (stars the free squad API omits, with rich bios).
+const curatedPlayers: Player[] = [
   // Argentina
   { id: 'messi', name: 'Lionel Messi', slug: 'lionel-messi', teamId: 'argentina', position: 'FW', jerseyNum: 10, age: 38, birthDate: '1987-06-24', birthPlace: 'Rosario, Argentina', clubTeam: 'Inter Miami', clubCountry: 'USA', nationality: 'Argentine', flag: '🇦🇷', height: 170, caps: 191, intGoals: 109, goals: 4, assists: 3, appearances: 4, minutesPlayed: 335, yellowCards: 0, redCards: 0, rating: 9.1, isStarPlayer: true },
   { id: 'dibu-martinez', name: 'Emiliano Martínez', slug: 'emiliano-martinez', teamId: 'argentina', position: 'GK', jerseyNum: 23, age: 32, birthDate: '1992-09-02', birthPlace: 'Mar del Plata, Argentina', clubTeam: 'Aston Villa', clubCountry: 'England', nationality: 'Argentine', flag: '🇦🇷', height: 195, caps: 47, intGoals: 0, goals: 0, assists: 0, appearances: 4, minutesPlayed: 360, yellowCards: 0, redCards: 0, rating: 8.2, isStarPlayer: true },
@@ -126,6 +129,9 @@ export const players: Player[] = [
   { id: 'mane', name: 'Sadio Mané', slug: 'sadio-mane', teamId: 'senegal', position: 'FW', jerseyNum: 10, age: 34, birthDate: '1992-04-10', birthPlace: 'Sédhiou, Senegal', clubTeam: 'Al-Nassr', clubCountry: 'Saudi Arabia', nationality: 'Senegalese', flag: '🇸🇳', height: 174, caps: 100, intGoals: 38, goals: 2, assists: 1, appearances: 4, minutesPlayed: 320, yellowCards: 0, redCards: 0, rating: 8.0, isStarPlayer: true },
   { id: 'diallo', name: 'Ismaïla Sarr', slug: 'ismaila-sarr', teamId: 'senegal', position: 'FW', jerseyNum: 23, age: 26, birthDate: '1998-02-25', birthPlace: 'Saint-Louis, Senegal', clubTeam: 'Crystal Palace', clubCountry: 'England', nationality: 'Senegalese', flag: '🇸🇳', height: 183, caps: 55, intGoals: 12, goals: 1, assists: 0, appearances: 3, minutesPlayed: 210, yellowCards: 0, redCards: 0, rating: 7.4, isStarPlayer: false },
 ];
+
+// Curated stars + real squad depth fetched from TheSportsDB. No generated/fake players.
+export const players: Player[] = [...curatedPlayers, ...squadPlayers];
 
 export const getPlayerBySlug = (slug: string) => players.find(p => p.slug === slug);
 export const getPlayersByTeam = (teamId: string) => players.filter(p => p.teamId === teamId);

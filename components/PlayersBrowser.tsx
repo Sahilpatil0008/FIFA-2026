@@ -130,7 +130,7 @@ export default function PlayersBrowser() {
                 href={`/players/${p.slug}`}
                 className="glass-card p-4 flex flex-col items-center text-center hover:no-underline group"
               >
-                <PlayerPhoto name={p.name} jersey={p.jerseyNum} color={color} size={80} rounded />
+                <PlayerPhoto name={p.name} photoUrl={p.photoUrl} jersey={p.jerseyNum} color={color} size={80} rounded />
                 <div className="mt-3 font-bold leading-tight group-hover:text-white transition-colors">
                   {p.name}
                 </div>
