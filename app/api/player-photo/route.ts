@@ -1,8 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 export const runtime = 'nodejs';
-// Cache photo lookups for a day — player headshots don't change.
-export const revalidate = 86400;
+// Must stay dynamic: the response depends on the ?name query param. Marking the
+// route cacheable (revalidate/segment cache) makes Netlify's CDN key its cache
+// without the `name` param, so the first player's photo gets served for every
+// name. force-dynamic + no-store below keeps each request per-name correct; the
+// upstream Wikipedia fetch is still cached per-URL, so it stays efficient.
+export const dynamic = 'force-dynamic';
 
 interface WikiThumbnail {
   source?: string;
@@ -53,7 +57,8 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(
       { url },
-      { headers: { 'Cache-Control': 'public, max-age=86400, stale-while-revalidate=604800' } },
+      // no-store so the CDN never serves one player's photo for another's name.
+      { headers: { 'Cache-Control': 'no-store' } },
     );
   } catch (error) {
     console.error('player-photo lookup failed:', error);

@@ -1,8 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 export const runtime = 'nodejs';
-// Stadium photos don't change — cache lookups for a day.
-export const revalidate = 86400;
+// Must stay dynamic: the response depends on the ?title query param. A cacheable
+// route makes Netlify's CDN key its cache without `title`, so the first venue's
+// photo gets served for every stadium. force-dynamic + no-store keeps each
+// request per-title correct; the upstream Wikipedia fetch is still cached.
+export const dynamic = 'force-dynamic';
 
 interface WikiThumbnail {
   source?: string;
@@ -66,7 +69,8 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(
       { url },
-      { headers: { 'Cache-Control': 'public, max-age=86400, stale-while-revalidate=604800' } },
+      // no-store so the CDN never serves one stadium's photo for another's title.
+      { headers: { 'Cache-Control': 'no-store' } },
     );
   } catch (error) {
     console.error('venue-photo lookup failed:', error);
