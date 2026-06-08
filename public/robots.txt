@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://fabulous-daffodil-94aabb.netlify.app/sitemap.xml
