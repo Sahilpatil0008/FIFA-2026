@@ -1,5 +1,9 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import type { Match } from '@/lib/data/matches';
+
+// TEMPORARY: pointed at the Premier League to verify live updates flow end-to-end.
+// Revert COMPETITION to 'WC' (and drop the ?status override) once verified.
+const COMPETITION = 'PL';
 
 export const runtime = 'nodejs';
 // Must stay dynamic: this is live data that changes minute-to-minute. Marking the
@@ -68,7 +72,7 @@ function mapMatch(m: FDMatch): Match {
   };
 }
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   const token = process.env.FOOTBALL_DATA_API_KEY;
   if (!token) {
     return NextResponse.json(
@@ -77,9 +81,13 @@ export async function GET() {
     );
   }
 
+  // TEMPORARY: allow ?status= to prove real scores flow even if nothing is
+  // in-play this instant. Defaults to LIVE (the real behavior).
+  const status = request.nextUrl.searchParams.get('status') ?? 'LIVE';
+
   try {
     const res = await fetch(
-      'https://api.football-data.org/v4/competitions/WC/matches?status=LIVE',
+      `https://api.football-data.org/v4/competitions/${COMPETITION}/matches?status=${status}`,
       { headers: { 'X-Auth-Token': token }, cache: 'no-store' },
     );
 
@@ -93,10 +101,12 @@ export async function GET() {
     }
 
     const data: FDResponse = await res.json();
-    const matches = (data.matches ?? []).map(mapMatch).filter((m) => m.status === 'LIVE');
+    const mapped = (data.matches ?? []).map(mapMatch);
+    // Default LIVE behavior still only surfaces in-play games to the UI.
+    const matches = status === 'LIVE' ? mapped.filter((m) => m.status === 'LIVE') : mapped;
 
     return NextResponse.json(
-      { matches, updatedAt: new Date().toISOString() },
+      { matches, count: matches.length, competition: COMPETITION, updatedAt: new Date().toISOString() },
       { headers: { 'Cache-Control': 'no-store' } },
     );
   } catch (error) {
