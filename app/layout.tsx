@@ -5,7 +5,7 @@ import Footer from "@/components/Footer";
 import { GoogleAnalytics } from "@next/third-parties/google";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://fabulous-daffodil-94aabb.netlify.app"),
+  metadataBase: new URL("https://fifa-by-sahilpatil.netlify.app"),
   title: "FIFA World Cup 2026 - Live Scores, Schedule, Teams & Stats",
   description:
     "Live scores, match schedule, group standings, all 48 teams and 1250+ players for FIFA World Cup 2026 in USA, Canada & Mexico.",
@@ -14,7 +14,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "FIFA World Cup 2026",
     description: "Live scores, schedule, teams and stats",
-    url: "https://fabulous-daffodil-94aabb.netlify.app",
+    url: "https://fifa-by-sahilpatil.netlify.app",
     siteName: "FIFA World Cup 2026",
     images: [{ url: "/og-image.jpg", width: 1200, height: 630 }],
     type: "website",
@@ -39,7 +39,7 @@ const jsonLd = {
     "@type": "Place",
     name: "USA, Canada, Mexico",
   },
-  url: "https://fabulous-daffodil-94aabb.netlify.app",
+  url: "https://fifa-by-sahilpatil.netlify.app",
   description: "FIFA World Cup 2026 live scores, schedule, teams",
 };
 
