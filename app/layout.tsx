@@ -24,6 +24,9 @@ export const metadata: Metadata = {
     title: "FIFA World Cup 2026",
     description: "Live scores, schedule, teams and stats",
   },
+  verification: {
+    google: "FLrtpSogYFA8oDMbkiNkCqhXYNBsFDB5RasXva4g1F8",
+  },
 };
 
 const jsonLd = {
