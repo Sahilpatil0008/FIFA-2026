@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     description: "Live scores, schedule, teams and stats",
   },
   verification: {
-    google: "FLrtpSogYFA8oDMbkiNkCqhXYNBsFDB5RasXva4g1F8",
+    google: "xp_ngkCpBBjurdlma6b9IuEXYGUa28-ZxKiuezB4YEI",
   },
 };
 
